@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -O -Wall -m32
 LIBS = -lm
 
-all: btest fshow ishow
+all: btest fshow ishow show
 
 btest: btest.c bits.c decl.c tests.c btest.h bits.h
 	$(CC) $(CFLAGS) $(LIBS) -o btest bits.c btest.c decl.c tests.c
@@ -19,6 +19,9 @@ ishow: ishow.c
 # Forces a recompile. Used by the driver program. 
 btestexplicit:
 	$(CC) $(CFLAGS) $(LIBS) -o btest bits.c btest.c decl.c tests.c 
+
+show: show.c bits.c bits.h 
+	$(CC) $(CFLAGS) $(LIBS) -o show show.c bits.c 
 
 clean:
 	rm -f *.o btest fshow ishow *~

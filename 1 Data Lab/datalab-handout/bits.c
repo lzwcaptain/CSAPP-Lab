@@ -12,7 +12,7 @@
  * it's not good practice to ignore compiler warnings, but in this
  * case it's OK.
  */
-
+#include "bits.h"
 #if 0
 /*
  * Instructions to Students:
@@ -163,7 +163,9 @@ int getByte(int x, int n)
  */
 int logicalShift(int x, int n)
 {
-  return 2;
+  int max_bytes = 1<<31;
+  max_bytes = ~((max_bytes>>n)<<1);
+  return ((x>>n) & max_bytes);
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -174,7 +176,19 @@ int logicalShift(int x, int n)
  */
 int bitCount(int x)
 {
-  return 2;
+  //没做出来，https://stackoverflow.com/questions/3815165/how-to-implement-bitcount-using-only-bitwise-operators/3815253#3815253
+  //   So if I have number 395 in binary 0000000110001011 (0 0 0 0 0 0 0 1 1 0 0 0 1 0 1 1)
+    // After the first step I have:      0000000101000110 (0+0 0+0 0+0 0+1 1+0 0+0 1+0 1+1) = 00 00 00 01 01 00 01 10
+    // In the second step I have:        0000000100010011 ( 00+00   00+01   01+00   01+10 ) = 0000 0001 0001 0011
+    // In the fourth step I have:        0000000100000100 (   0000+0001       0001+0011   ) = 00000001 00000100
+    // In the last step I have:          0000000000000101 (       00000001+00000100       )
+  int c = x;
+  c = (c & 0x55555555) + ((c >> 1) & 0x55555555);
+  c = (c & 0x33333333) + ((c >> 2) & 0x33333333);
+  c = (c & 0x0F0F0F0F) + ((c >> 4) & 0x0F0F0F0F);
+  c = (c & 0x00FF00FF) + ((c >> 8) & 0x00FF00FF);
+  c = (c & 0x0000FFFF) + ((c >> 16) & 0x0000FFFF);
+  return c;
 }
 /*
  * bang - Compute !x without using !
@@ -185,7 +199,12 @@ int bitCount(int x)
  */
 int bang(int x)
 {
-  return 2;
+  x = x | (x>>16);
+  x = x | (x>>8);
+  x = x | (x>>4);
+  x = x | (x>>2);
+  x = x | (x>>1);
+  return ~x & 0x1;
 }
 /*
  * tmin - return minimum two's complement integer
@@ -195,7 +214,7 @@ int bang(int x)
  */
 int tmin(void)
 {
-  return 2;
+  return (1<<31);
 }
 /*
  * fitsBits - return 1 if x can be represented as an
